@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { BookCover } from "./BookCover";
 import { Pager } from "./Pager";
 import {
-  Battery,
   BookIcon,
   BoltIcon,
   ChartIcon,
@@ -17,38 +16,13 @@ import {
   People,
   Person,
   Reader,
-  Signal,
   Star,
   WalletIcon,
-  Wifi,
 } from "./icons";
 import { bookStats, books } from "@/lib/data";
 import { formatUsdc, walletAmount } from "@/lib/format";
 import { useData, useStore, useUi } from "@/lib/store";
 import type { Book, Difficulty, TabId } from "@/lib/types";
-
-export function StatusBar() {
-  const [time, setTime] = useState("9:41");
-  useEffect(() => {
-    const paint = () => {
-      const now = new Date();
-      setTime(now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }));
-    };
-    paint();
-    const timer = window.setInterval(paint, 10000);
-    return () => window.clearInterval(timer);
-  }, []);
-  return (
-    <div className="statusbar">
-      <span>{time}</span>
-      <span className="status-icons">
-        <Signal />
-        <Wifi />
-        <Battery />
-      </span>
-    </div>
-  );
-}
 
 export function BrandBar() {
   const data = useData();

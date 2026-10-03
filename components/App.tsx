@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { BookChallenges, ChallengesTab, CreateChallenge, JoinSheet } from "./ChallengeScreens";
-import { BottomNav, HomeScreen, StatusBar } from "./HomeScreen";
+import { BottomNav, HomeScreen } from "./HomeScreen";
 import { Ceremony, LeaderboardScreen, LibraryScreen, ProfileScreen, SettingsSheet, WalletSheet } from "./MoreScreens";
 import { ReadingFlow } from "./ReadingFlow";
 import { ERROR_COPY } from "@/lib/data";
@@ -75,7 +75,7 @@ function Phone() {
               }
         }
       >
-        {frame.native ? <div className="safe-top" /> : <StatusBar />}
+        {frame.native && <div className="safe-top" />}
         <div className="device-main">
           <div key={screenKey} className={top ? (state.ui.dir === "forward" ? "anim-forward screen-wrap" : "anim-back screen-wrap") : "tab-pane screen-wrap"}>
             {!top && state.ui.tab === "home" && <HomeScreen />}

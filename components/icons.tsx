@@ -144,38 +144,6 @@ export function Check() {
   );
 }
 
-export function Signal() {
-  return (
-    <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor" aria-hidden>
-      <rect x="0" y="8" width="2.2" height="4" rx="0.4" />
-      <rect x="3.6" y="5.5" width="2.2" height="6.5" rx="0.4" />
-      <rect x="7.2" y="3" width="2.2" height="9" rx="0.4" />
-      <rect x="10.8" y="0.5" width="2.2" height="11.5" rx="0.4" opacity="0.35" />
-    </svg>
-  );
-}
-
-export function Wifi() {
-  return (
-    <svg width="14" height="12" viewBox="0 0 16 12" fill="none" aria-hidden>
-      <path d="M1.2 4.4c3.8-3.2 9.8-3.2 13.6 0" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-      <path d="M3.6 6.8c2.5-2 6.3-2 8.8 0" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-      <path d="M6.2 9.1c1.1-.8 2.5-.8 3.6 0" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-      <circle cx="8" cy="11" r="0.8" fill="currentColor" />
-    </svg>
-  );
-}
-
-export function Battery() {
-  return (
-    <svg width="24" height="12" viewBox="0 0 24 12" fill="none" aria-hidden>
-      <rect x="0.7" y="0.7" width="20" height="10.6" rx="2.2" stroke="currentColor" strokeWidth="1.2" />
-      <rect x="2.2" y="2.2" width="15" height="7.6" rx="1" fill="currentColor" />
-      <path d="M21.4 4.2h1.2c.5 0 .9.4.9.9v1.8c0 .5-.4.9-.9.9h-1.2" fill="currentColor" />
-    </svg>
-  );
-}
-
 export function Bookmark({ filled = false }: { filled?: boolean }) {
   return (
     <svg width="18" height="18" viewBox="0 0 18 18" fill={filled ? "currentColor" : "none"} aria-hidden>
