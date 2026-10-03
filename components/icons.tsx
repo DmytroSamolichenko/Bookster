@@ -1,3 +1,5 @@
+type IconProps = { size?: number };
+
 export function WalletIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
