@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { BookCover } from "./BookCover";
 import { Pager } from "./Pager";
 import {
@@ -76,7 +76,7 @@ export function HomeScreen() {
   const ui = useUi();
   const { dispatch } = useStore();
   return (
-    <div className="home">
+    <div className={ui.swiped ? "home" : "home hint-on"}>
       <BrandBar />
       <Pager
         index={ui.homeIndex}
@@ -86,9 +86,26 @@ export function HomeScreen() {
         }}
       >
         {books.map((book, index) => (
-          <BookSlide key={book.id} book={book} index={index} total={books.length} swiped={ui.swiped} now={ui.now} challenges={data.challenges} onOpen={() => dispatch({ type: "push", screen: { name: "challenges", bookId: book.id } })} />
+          <BookSlide key={book.id} book={book} index={index} total={books.length} now={ui.now} challenges={data.challenges} onOpen={() => dispatch({ type: "push", screen: { name: "challenges", bookId: book.id } })} />
         ))}
       </Pager>
+      <SwipeHint visible={!ui.swiped} />
+    </div>
+  );
+}
+
+function SwipeHint({ visible }: { visible: boolean }) {
+  const [present, setPresent] = useState(visible);
+  useEffect(() => {
+    if (visible) return;
+    const timer = window.setTimeout(() => setPresent(false), 480);
+    return () => window.clearTimeout(timer);
+  }, [visible]);
+  if (!present) return null;
+  return (
+    <div className={visible ? "swipe-hint" : "swipe-hint out"} aria-hidden>
+      <Chevron dir="up" />
+      <span>SWIPE TO EXPLORE</span>
     </div>
   );
 }
@@ -97,7 +114,6 @@ function BookSlide({
   book,
   index,
   total,
-  swiped,
   now,
   challenges,
   onOpen,
@@ -105,7 +121,6 @@ function BookSlide({
   book: Book;
   index: number;
   total: number;
-  swiped: boolean;
   now: number;
   challenges: ReturnType<typeof useData>["challenges"];
   onOpen: () => void;
@@ -152,10 +167,6 @@ function BookSlide({
         <button className="gold-btn" onClick={onOpen}>
           VIEW CHALLENGES <Chevron />
         </button>
-        <div className={swiped ? "swipe-hint dim" : "swipe-hint"}>
-          <Chevron dir="up" />
-          SWIPE TO EXPLORE
-        </div>
       </div>
     </article>
   );

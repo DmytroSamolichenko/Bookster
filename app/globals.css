@@ -126,6 +126,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   flex-direction: column;
   min-height: 0;
 }
+.home { position: relative; }
+.home.hint-on .slide { padding-bottom: 30px; }
 .screen-wrap > * { flex: 1; min-height: 0; }
 .anim-forward { animation: slide-in 440ms cubic-bezier(0.22, 1, 0.36, 1); }
 .anim-back { animation: slide-back 340ms cubic-bezier(0.22, 1, 0.36, 1); }
@@ -190,8 +192,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 0 18px 4px;
+  padding: 0 18px 10px;
   min-height: 0;
+  transition: padding-bottom 0.45s ease;
 }
 .stage-row {
   flex: 1;
@@ -359,16 +362,31 @@ button, a { -webkit-tap-highlight-color: transparent; }
   font-weight: 500;
 }
 .swipe-hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  margin-top: 8px;
-  color: #8d887f;
-  font-size: 9px;
-  letter-spacing: 0.18em;
+  gap: 0;
+  padding-bottom: 1px;
+  color: #8a847c;
+  font-size: 8px;
+  letter-spacing: 0.16em;
+  pointer-events: none;
+  animation: swipe-bob 1.5s ease-in-out infinite;
 }
-.swipe-hint.dim { opacity: 0.35; }
+.swipe-hint svg { width: 10px; height: 10px; }
+.swipe-hint.out { animation: swipe-hint-out 0.45s ease forwards; }
+@keyframes swipe-bob {
+  0%, 100% { transform: translateY(1px); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes swipe-hint-out {
+  to { opacity: 0; transform: translateY(-10px); }
+}
 
 .topbar {
   flex: none;
@@ -983,7 +1001,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .desc { margin-top: 6px; }
   .statbar { margin-top: 8px; min-height: 52px; }
   .gold-btn { margin-top: 8px; height: 46px; }
-  .swipe-hint { margin-top: 4px; }
+  .slide { padding-bottom: 8px; }
+  .home.hint-on .slide { padding-bottom: 24px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
