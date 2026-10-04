@@ -462,6 +462,7 @@ function reducer(state: State, action: Action): State {
     case "checkpoint": {
       const next = withParticipation(state.data, action.challengeId, (item) => {
         const scores = item.checkpointScores.slice();
+        while (scores.length <= action.chapter) scores.push(null);
         scores[action.chapter] = action.score;
         return { ...item, checkpointScores: scores, knowledgeScore: knowledgeFrom(scores) };
       });

@@ -28,6 +28,30 @@ button, a { -webkit-tap-highlight-color: transparent; }
 ::selection { background: rgba(198, 163, 106, 0.28); }
 
 .boot { min-height: 100dvh; background: #050505; }
+.splash {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: #050505;
+}
+.splash img {
+  width: 148px;
+  height: auto;
+  animation: logo-glow 2.2s ease forwards;
+}
+.splash.out { animation: splash-out 0.8s ease forwards; }
+@keyframes logo-glow {
+  0% { opacity: 0; }
+  35% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes splash-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
 
 .stage {
   min-height: 100dvh;
@@ -947,6 +971,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .essay:focus { border-color: rgba(198, 163, 106, 0.55); }
 .fill-bar { height: 2px; margin-top: 16px; background: rgba(255, 255, 255, 0.08); }
 .fill-bar i { display: block; height: 100%; background: #c6a36a; animation: fill 1.4s linear forwards; }
+.fill-bar.slow i { animation-duration: 12s; }
 @keyframes fill { from { width: 0; } to { width: 100%; } }
 
 @container (max-height: 760px) {

@@ -11,6 +11,13 @@ import type { Evaluation } from "@/lib/evaluate";
 
 const letters = ["A", "B", "C", "D"];
 
+type Asked = {
+  prompt: string;
+  choices: string[];
+  kind: string;
+  answer: number | null;
+};
+
 export function ReadingFlow({ bookId, challengeId }: { bookId: string; challengeId: string }) {
   const book = getBook(bookId);
   const data = useData();
@@ -21,7 +28,7 @@ export function ReadingFlow({ bookId, challengeId }: { bookId: string; challenge
     if (participation.bookmark != null) return participation.bookmark;
     return Math.min(participation.chaptersRead, book.chapters.length - 1);
   });
-  const [phase, setPhase] = useState<"read" | "intro" | "quiz" | "result" | "final" | "evaluating" | "final-result">(() => {
+  const [phase, setPhase] = useState<"read" | "intro" | "preparing" | "quiz" | "result" | "final" | "evaluating" | "final-result">(() => {
     if (!book || !participation) return "read";
     if (participation.chaptersRead >= book.chapters.length && !participation.finalPassed && participation.status === "active") return "final";
     return "read";
@@ -38,6 +45,9 @@ export function ReadingFlow({ bookId, challengeId }: { bookId: string; challenge
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
   const [claiming, setClaiming] = useState(false);
   const [claimError, setClaimError] = useState<string | null>(null);
+  const [asked, setAsked] = useState<Asked[] | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [checking, setChecking] = useState(false);
 
   if (!book || !participation) return null;
   const current = book.chapters[chapter];
@@ -53,7 +63,8 @@ export function ReadingFlow({ bookId, challengeId }: { bookId: string; challenge
     setPhase("intro");
   }
 
-  function beginQuiz() {
+  async function beginQuiz() {
+    if (!book || !current) return;
     setStep(0);
     setChoice(null);
     setLocked(false);
@@ -61,24 +72,76 @@ export function ReadingFlow({ bookId, challengeId }: { bookId: string; challenge
     setTimes([]);
     setLocalScore(null);
     setRushed(false);
+    setAsked(null);
+    setToken(null);
+    setPhase("preparing");
+    try {
+      const response = await fetch("/api/questions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookId: book.id, chapterId: current.id }),
+      });
+      if (!response.ok) throw new Error("unavailable");
+      const body = (await response.json()) as { token: string; questions: Omit<Asked, "answer">[] };
+      setToken(body.token);
+      setAsked(body.questions.map((item) => ({ ...item, answer: null })));
+    } catch {
+      setToken(null);
+      setAsked(current.questions.map((item) => ({
+        prompt: item.prompt,
+        choices: [...item.choices],
+        kind: item.kind,
+        answer: item.answer,
+      })));
+    }
     setStarted(Date.now());
     setPhase("quiz");
   }
 
-  function commitChoice() {
-    if (choice == null || !current || locked) return;
-    const question = current.questions[step];
-    const good = choice === question.answer;
+  async function commitChoice() {
+    if (choice == null || !current || !asked || locked || checking) return;
+    const elapsed = (Date.now() - started) / 1000;
+    setChecking(true);
+    let answer = asked[step]?.answer;
+    if (token) {
+      try {
+        const response = await fetch("/api/grade", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            bookId: book?.id,
+            chapterId: current.id,
+            token,
+            index: step,
+            choice,
+            prompt: asked[step].prompt,
+            choices: asked[step].choices,
+          }),
+        });
+        if (!response.ok) throw new Error("grade");
+        const body = (await response.json()) as { answer: number };
+        answer = body.answer;
+      } catch {
+        answer = current.questions[step]?.answer ?? null;
+      }
+    }
+    if (answer == null) {
+      setChecking(false);
+      return;
+    }
+    setAsked((list) => list?.map((item, index) => (index === step ? { ...item, answer } : item)) ?? list);
     setLocked(true);
-    setTimes((list) => [...list, (Date.now() - started) / 1000]);
-    if (good) setCorrectCount((count) => count + 1);
+    setTimes((list) => [...list, elapsed]);
+    if (choice === answer) setCorrectCount((count) => count + 1);
+    setChecking(false);
   }
 
   function nextQuestion() {
     if (!current || !participation) return;
     const answered = step + 1;
     const totalRight = correctCount;
-    if (answered < current.questions.length) {
+    const total = asked?.length ?? current.questions.length;
+    if (answered < total) {
       setStep(answered);
       setChoice(null);
       setLocked(false);
@@ -86,7 +149,7 @@ export function ReadingFlow({ bookId, challengeId }: { bookId: string; challenge
       return;
     }
     const average = times.length ? times.reduce((sum, item) => sum + item, 0) / times.length : 3;
-    let score = Math.round((totalRight / current.questions.length) * 100);
+    let score = Math.round((totalRight / total) * 100);
     const tooFast = average < 2;
     if (tooFast) score = Math.max(0, score - 8);
     setRushed(tooFast);
@@ -98,8 +161,17 @@ export function ReadingFlow({ bookId, challengeId }: { bookId: string; challenge
   async function submitFinal() {
     if (!book) return;
     setPhase("evaluating");
-    const result = evaluateAnswer(book.id, essay);
-    await wait(1400);
+    let result = evaluateAnswer(book.id, essay);
+    try {
+      const response = await fetch("/api/evaluate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookId: book.id, essay }),
+      });
+      if (response.ok) result = (await response.json()) as Evaluation;
+    } catch {
+      /* keep the local reading of the essay */
+    }
     setEvaluation(result);
     dispatch({ type: "final", challengeId, score: result.score, passed: result.passed, concepts: result.concepts });
     setPhase("final-result");
@@ -210,16 +282,26 @@ export function ReadingFlow({ bookId, challengeId }: { bookId: string; challenge
         </div>
       )}
 
-      {phase === "quiz" && current && (
+      {phase === "preparing" && (
+        <div className="screen-body" style={{ paddingTop: 48 }}>
+          <p className="eyebrow">CHECKPOINT</p>
+          <h2 style={{ fontSize: 32, margin: "8px 0 0", fontWeight: 520 }}>Preparing your questions</h2>
+          <p className="desc">Written from the chapter you just read.</p>
+          <div className="fill-bar slow"><i /></div>
+        </div>
+      )}
+
+      {phase === "quiz" && asked?.[step] && (
         <Quiz
           index={step}
-          total={current.questions.length}
-          prompt={current.questions[step].prompt}
-          kind={current.questions[step].kind}
-          choices={current.questions[step].choices}
-          answer={current.questions[step].answer}
+          total={asked.length}
+          prompt={asked[step].prompt}
+          kind={asked[step].kind}
+          choices={asked[step].choices}
+          answer={asked[step].answer ?? -1}
           choice={choice}
           locked={locked}
+          checking={checking}
           onChoose={setChoice}
           onCheck={commitChoice}
           onNext={nextQuestion}
@@ -261,7 +343,7 @@ export function ReadingFlow({ bookId, challengeId }: { bookId: string; challenge
             <>
               <textarea className="essay" value={essay} onChange={(event) => setEssay(event.target.value)} placeholder="Write the system in your own words." />
               {phase === "evaluating" ? <div className="fill-bar"><i /></div> : <button className="gold-btn" disabled={essay.trim().length < 20} onClick={submitFinal}>SUBMIT</button>}
-              {phase === "evaluating" && <p className="kicker" style={{ marginTop: 12 }}>Simulated evaluation</p>}
+              {phase === "evaluating" && <p className="kicker" style={{ marginTop: 12 }}>Checking your answer</p>}
             </>
           )}
           {phase === "final-result" && evaluation && (
@@ -280,7 +362,7 @@ export function ReadingFlow({ bookId, challengeId }: { bookId: string; challenge
 }
 
 function Quiz({
-  index, total, prompt, kind, choices, answer, choice, locked, onChoose, onCheck, onNext, onClose,
+  index, total, prompt, kind, choices, answer, choice, locked, checking, onChoose, onCheck, onNext, onClose,
 }: {
   index: number;
   total: number;
@@ -290,6 +372,7 @@ function Quiz({
   answer: number;
   choice: number | null;
   locked: boolean;
+  checking: boolean;
   onChoose: (index: number) => void;
   onCheck: () => void;
   onNext: () => void;
@@ -316,7 +399,7 @@ function Quiz({
         })}
         {locked && choice !== answer && <p className="kicker">The stronger answer is {letters[answer]}.</p>}
         {!locked ? (
-          <button className="gold-btn" disabled={choice == null} onClick={onCheck}>CHECK</button>
+          <button className="gold-btn" disabled={choice == null || checking} onClick={onCheck}>{checking ? "CHECKING" : "CHECK"}</button>
         ) : (
           <button className="gold-btn" onClick={onNext}>{index === total - 1 ? "SEE SCORE" : "NEXT"}</button>
         )}

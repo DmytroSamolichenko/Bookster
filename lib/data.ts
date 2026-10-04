@@ -1,4 +1,5 @@
 import type { Book, BoardRow, Challenge, HistoryItem, Participation } from "./types";
+import { extraChapters } from "./extra-chapters";
 import { quotedPrize } from "./settlement";
 
 const hour = 3600000;
@@ -926,6 +927,13 @@ export const books: Book[] = [
     ],
   },
 ];
+
+for (const book of books) {
+  const more = extraChapters[book.id];
+  if (!more) continue;
+  book.chapters.push(...more);
+  book.pages += 42;
+}
 
 const now = Date.now();
 

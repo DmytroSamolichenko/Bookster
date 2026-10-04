@@ -23,10 +23,21 @@ export function App() {
 function Phone() {
   const { state, dispatch } = useStore();
   const frame = useFrame();
+  const [splash, setSplash] = useState(true);
+  const [splashOut, setSplashOut] = useState(false);
   const top = state.ui.stack[state.ui.stack.length - 1];
   const lock = useRef(false);
   const showNav = !top && !state.ui.tx;
   const screenKey = top ? `${top.name}-${"bookId" in top ? top.bookId : ""}-${"challengeId" in top ? top.challengeId : ""}` : state.ui.tab;
+
+  useEffect(() => {
+    const fade = window.setTimeout(() => setSplashOut(true), 2200);
+    const done = window.setTimeout(() => setSplash(false), 3000);
+    return () => {
+      window.clearTimeout(fade);
+      window.clearTimeout(done);
+    };
+  }, []);
 
   async function confirmJoin(challengeId: string) {
     if (lock.current) return;
@@ -117,6 +128,11 @@ function Phone() {
           />
         )}
         {state.ui.toast && <div className="toast">{state.ui.toast.message}</div>}
+        {splash && (
+          <div className={splashOut ? "splash out" : "splash"} aria-hidden={splashOut}>
+            <img src="/bookster-logo.png" alt="" />
+          </div>
+        )}
       </div>
       </div>
     </div>
