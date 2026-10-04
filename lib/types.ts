@@ -40,6 +40,7 @@ export type Book = {
   difficulty: Difficulty;
   description: string;
   cover: CoverVariant;
+  coverImage?: string;
   finalPrompt: string;
   chapters: Chapter[];
 };
@@ -94,6 +95,7 @@ export type HistoryItem = {
   result: string;
   prize: number;
   bookId?: string;
+  coverImage?: string;
 };
 
 export type TxKind = "join" | "claim" | "create";

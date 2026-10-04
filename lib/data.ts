@@ -16,6 +16,7 @@ export const books: Book[] = [
     difficulty: "Medium",
     description: "An easy and proven way to build good habits and break bad ones.",
     cover: "atomic",
+    coverImage: "/covers/atomic.jpg",
     finalPrompt:
       "You have just finished Atomic Habits. You repeatedly tried to build a workout habit but failed after 7–10 days. Using at least two concepts from the book, design a practical system that would help you solve this problem.",
     chapters: [
@@ -212,6 +213,7 @@ export const books: Book[] = [
     difficulty: "Hard",
     description: "A method for producing your best work in a distracted world.",
     cover: "deep",
+    coverImage: "/covers/deep.jpg",
     finalPrompt:
       "Your best thinking keeps getting chopped into ten-minute fragments. Using at least two ideas from Deep Work, design a weekday system that would protect one serious block of focus.",
     chapters: [
@@ -357,6 +359,7 @@ export const books: Book[] = [
     difficulty: "Easy",
     description: "Timeless lessons on wealth, greed, and the stories we tell about money.",
     cover: "money",
+    coverImage: "/covers/money.jpg",
     finalPrompt:
       "A friend earns well but feels one surprise expense away from panic. Using at least two ideas from The Psychology of Money, outline a calmer way for them to handle money.",
     chapters: [
@@ -502,6 +505,7 @@ export const books: Book[] = [
     difficulty: "Easy",
     description: "A fable about a shepherd who learns to listen for his own path.",
     cover: "alchemist",
+    coverImage: "/covers/alchemist.jpg",
     finalPrompt:
       "A character is afraid to leave a safe routine for a calling they keep postponing. Using at least two ideas from The Alchemist, describe how they might begin without pretending the fear will vanish first.",
     chapters: [
@@ -647,6 +651,7 @@ export const books: Book[] = [
     difficulty: "Hard",
     description: "Why the mind jumps to conclusions, and how a slower look can help.",
     cover: "thinking",
+    coverImage: "/covers/thinking.jpg",
     finalPrompt:
       "You are about to make a costly decision based on a first impression and a single vivid story. Using at least two ideas from the book, describe a slower process that would test that impression before you commit.",
     chapters: [
@@ -792,6 +797,7 @@ export const books: Book[] = [
     difficulty: "Hard",
     description: "A historical study of how power is displayed, guarded, and lost.",
     cover: "power",
+    coverImage: "/covers/power.jpg",
     finalPrompt:
       "A new lead is tempted to show every advantage at once. Using at least two observations from the book, explain a more restrained approach and the risk of taking those observations too far.",
     chapters: [
@@ -1178,6 +1184,7 @@ export const initialHistory: HistoryItem[] = [
     id: "h1",
     title: "Sapiens",
     author: "Yuval Noah Harari",
+    coverImage: "/covers/sapiens.jpg",
     kicker: "History",
     bg: "#E6D3B8",
     fg: "#2A2118",
@@ -1191,6 +1198,7 @@ export const initialHistory: HistoryItem[] = [
     id: "h2",
     title: "Educated",
     author: "Tara Westover",
+    coverImage: "/covers/educated.jpg",
     kicker: "Memoir",
     bg: "#1C2430",
     fg: "#F4F0E8",
@@ -1204,6 +1212,7 @@ export const initialHistory: HistoryItem[] = [
     id: "h3",
     title: "Meditations",
     author: "Marcus Aurelius",
+    coverImage: "/covers/meditations.jpg",
     kicker: "Philosophy",
     bg: "#E7E1D6",
     fg: "#1A1A1A",
@@ -1217,6 +1226,7 @@ export const initialHistory: HistoryItem[] = [
     id: "h4",
     title: "Man's Search for Meaning",
     author: "Viktor Frankl",
+    coverImage: "/covers/meaning.jpg",
     kicker: "Psychology",
     bg: "#F1E7D6",
     fg: "#241C16",
@@ -1230,6 +1240,7 @@ export const initialHistory: HistoryItem[] = [
     id: "h5",
     title: "Start With Why",
     author: "Simon Sinek",
+    coverImage: "/covers/why.jpg",
     kicker: "Leadership",
     bg: "#141414",
     fg: "#F6F1E8",
@@ -1243,6 +1254,7 @@ export const initialHistory: HistoryItem[] = [
     id: "h6",
     title: "Can't Hurt Me",
     author: "David Goggins",
+    coverImage: "/covers/hurt.jpg",
     kicker: "Memoir",
     bg: "#2A2420",
     fg: "#F3EEE6",
@@ -1256,6 +1268,7 @@ export const initialHistory: HistoryItem[] = [
     id: "h7",
     title: "Show Your Work",
     author: "Austin Kleon",
+    coverImage: "/covers/show.jpg",
     kicker: "Creativity",
     bg: "#F7F1E6",
     fg: "#1B1B1B",
@@ -1269,6 +1282,7 @@ export const initialHistory: HistoryItem[] = [
     id: "h8",
     title: "The Subtle Art",
     author: "Mark Manson",
+    coverImage: "/covers/subtle.jpg",
     kicker: "Essays",
     bg: "#101010",
     fg: "#F2EFEA",

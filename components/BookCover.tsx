@@ -14,6 +14,15 @@ export function BookCover({
   plain?: HistoryItem;
   size?: "hero" | "thumb";
 }) {
+  const photo = book?.coverImage ?? plain?.coverImage;
+  if (photo) {
+    const title = book?.title ?? plain?.title ?? "Book";
+    return (
+      <article className={`cover photo ${size === "hero" ? "cover-hero" : "thumb"}`} aria-label={`${title} cover`}>
+        <img className="cover-photo" src={photo} alt="" />
+      </article>
+    );
+  }
   if (plain && !plain.bookId) {
     return (
       <div className={`cover-plain thumb`} style={{ background: plain.bg, color: plain.fg }}>
